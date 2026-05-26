@@ -20,6 +20,7 @@ class Player:
         self.y = float(y)
         self.actor = Actor(name)
         self.actor.pos = (x, y)
+        print('i love hentai')
 
         # Scaling state
         self.scale = 0.3
