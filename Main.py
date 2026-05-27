@@ -40,7 +40,6 @@ class Player:
         self.velocity = 0
         self.aceleration = 0.03
         self.friction = 0.03
-
         # Scaling state
         self.scale = 1
         self.base_size = (self.actor.width, self.actor.height)
@@ -93,6 +92,7 @@ class Player:
     def movement(self):
         #use of velocity for easing 
         self.actor.pos = (self.x, self.y) 
+        self.actor_center = (self.x + self.actor.width/2, self.y + self.actor.height/2)
         self.y -= math.cos(self.rotation - self.offset) * min(self.velocity, self.max_speed) #updating positon
         self.x -= math.sin(self.rotation - self.offset) * min(self.velocity, self.max_speed)
         
@@ -133,7 +133,9 @@ def update():
 def draw():
     screen.clear()
     player.draw()
-    screen.draw.text("scale:", (10, 10), color="white", fontsize=24)
+    #cannon.cannon_draw(screen, player.scaled_actor_surface, player.actor.pos, player.rotation, player.base_size[0]/2-10, player.base_size[1]/5)
+    cannon.cannon_draw(screen, player.scaled_actor_surface, player.actor_center, player.rotation, 0, 0)
+    screen.draw.text(f"Rotation: {player.rotation_degrees:.2f}", (10, 10), color="white", fontsize=24)
     screen.draw.text(f"Scale: {player.scale:.2f}", (10, 45), color="yellow", fontsize=24)
     screen.draw.text(f"velocity: {player.velocity:.2f}", (10, 85), color="yellow", fontsize=24)
 
