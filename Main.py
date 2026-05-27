@@ -8,6 +8,7 @@ import cannon
 from typing import TYPE_CHECKING
 import os
 import tkinter as tk
+from pgzero.builtins import keys
 
 #Find monitor
 root = tk.Tk()
@@ -15,7 +16,7 @@ monitor_width = root.winfo_screenwidth()
 root.destroy()
 # --- Window Settings ---
 WIDTH = monitor_width
-HEIGHT = 300
+HEIGHT = 900
 TITLE = "Tea-n-Thieves"
 center_of_screen = (WIDTH/2, HEIGHT/2)
 
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class Player:
-    def __init__(self, image: str, x: float, y: float):
+    def __init__(self, image: str, x: float, y: float, key_up = keys.W, key_down = keys.S, key_left = keys.A, key_right = keys.D):
         #animation
         self.actor = Actor(image)
         self.frame = 0
@@ -54,6 +55,18 @@ class Player:
         #rotation
         self.rotation = math.pi #-0.535 #make the boat straight
         self.offset = self.rotation
+        
+        #cannon class 
+        self.cannon = cannon.Cannon("cannon")
+        
+        #keybinds
+        self.key_up = key_up
+        self.key_left = key_left
+        self.key_down = key_down
+        self.key_right = key_right
+
+    def cannon_spawn(self):
+            self.cannon.cannon_draw(screen, self.scaled_actor_surface, self.actor_center, self.rotation, 0, 0)
     def rescale(self):
         w, h = self.base_size
         new_size = (
@@ -74,9 +87,9 @@ class Player:
         if keyboard.l:
             self.scale -= 0.01
             self.scale = max(0.2, self.scale)
-        if keyboard.a:
+        if keyboard[self.key_left]:
             self.rotation += (1*math.pi)/180 * self.rotate_speed
-        if keyboard.d:
+        if keyboard[self.key_right]:
             self.rotation -= (1*math.pi)/180 * self.rotate_speed
             
         self.animation()
@@ -88,6 +101,7 @@ class Player:
         rect = self.rotated_scaled_actor_surface.get_rect(center=self.actor.pos)
         # draw boat
         screen.blit(self.rotated_scaled_actor_surface, rect)
+        self.cannon_spawn()
 
     def movement(self):
         #use of velocity for easing 
@@ -98,12 +112,12 @@ class Player:
         
         #need to set the animation based off velocity
         self.animation_velocity_tracker = math.floor((self.velocity/self.max_speed)*100*0.6)
-        if keyboard.w:
+        if keyboard[self.key_up]:
             self.velocity += self.aceleration
             self.friction = 0
             if self.frame < 60:
                 self.frame = self.animation_velocity_tracker 
-        if keyboard.s:
+        if keyboard[self.key_down]:
             if self.frame > 0:
                 self.frame = self.animation_velocity_tracker
             if self.friction < 0.03:
@@ -122,19 +136,18 @@ class Player:
         self.actor.image = self.step
 
 player = Player("boat", WIDTH / 2, HEIGHT / 2)
-cannon = cannon.Cannon("cannon")
-
+player_2 = Player("boat", WIDTH / 2 + 200, HEIGHT / 2 + 200, keys.UP, keys.DOWN, keys.LEFT, keys.RIGHT)
 
 
 def update():
     player.update()
+    player_2.update()
 
 
 def draw():
     screen.clear()
     player.draw()
-    #cannon.cannon_draw(screen, player.scaled_actor_surface, player.actor.pos, player.rotation, player.base_size[0]/2-10, player.base_size[1]/5)
-    cannon.cannon_draw(screen, player.scaled_actor_surface, player.actor_center, player.rotation, 0, 0)
+    player_2.draw()
     screen.draw.text(f"Rotation: {player.rotation_degrees:.2f}", (10, 10), color="white", fontsize=24)
     screen.draw.text(f"Scale: {player.scale:.2f}", (10, 45), color="yellow", fontsize=24)
     screen.draw.text(f"velocity: {player.velocity:.2f}", (10, 85), color="yellow", fontsize=24)
