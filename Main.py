@@ -1,11 +1,21 @@
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = "centered"
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{0},{40}"
 import pgzrun
 import pygame
 import math
+import cannon 
 from typing import TYPE_CHECKING
+import os
+import tkinter as tk
 
+#Find monitor
+root = tk.Tk()
+monitor_width = root.winfo_screenwidth()
+root.destroy()
 # --- Window Settings ---
-WIDTH = 800
-HEIGHT = 600
+WIDTH = monitor_width
+HEIGHT = 300
 TITLE = "Tea-n-Thieves"
 center_of_screen = (WIDTH/2, HEIGHT/2)
 
@@ -112,6 +122,8 @@ class Player:
         self.actor.image = self.step
 
 player = Player("boat", WIDTH / 2, HEIGHT / 2)
+cannon = cannon.Cannon("cannon")
+
 
 
 def update():
